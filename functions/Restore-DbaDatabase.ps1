@@ -53,7 +53,7 @@ function Restore-DbaDatabase {
         Specify a DateTime object to which you want the database restored to. Default is to the latest point available in the specified backups.
 
     .PARAMETER NoRecovery
-        Indicates if the databases should be recovered after last restore. Default is to recover.
+        Indicates if the databases should be recovered after last restore. Default is to recover. ( mutually exclusive with parameter StandbyDirectory )
 
     .PARAMETER WithReplace
         Switch indicated is the restore is allowed to replace an existing database.
@@ -141,7 +141,8 @@ function Restore-DbaDatabase {
         If value provided the restore will be executed under this login's context. The login must exist, and have the relevant permissions to perform the restore.
 
     .PARAMETER StandbyDirectory
-        If a directory is specified the database(s) will be restored into a standby state, with the standby file placed into this directory (which must exist, and be writable by the target Sql Server instance).
+        If a directory is specified the database(s) will be restored into a standby state, with the standby file placed into this directory 
+       (which must exist, and be writable by the target Sql Server instance).  ( mutually exclusive with parameter NoRecovery )
 
     .PARAMETER AzureCredential
         The name of the SQL Server credential to be used if restoring from an Azure hosted backup using Storage Access Keys.
@@ -287,7 +288,7 @@ function Restore-DbaDatabase {
         >> DestinationFilePrefix = 'prefix'
         >> DatabaseName ='Restored'
         >> RestoreTime = (get-date "14:58:30 22/05/2017")
-        >> NoRecovery = $true
+        >> NoRecovery = $false
         >> WithReplace = $true
         >> StandbyDirectory = 'C:\dbatools\standby'
         >> }
@@ -295,7 +296,6 @@ function Restore-DbaDatabase {
         PS C:\> $files | Restore-DbaDatabase @params
         PS C:\> Invoke-DbaQuery -SQLInstance server\instance1 -Query "select top 1 * from Restored.dbo.steps order by dt desc"
         PS C:\> $params.RestoreTime = (get-date "15:09:30 22/05/2017")
-        PS C:\> $params.NoRecovery = $false
         PS C:\> $params.Add("Continue",$true)
         PS C:\> $files | Restore-DbaDatabase @params
         PS C:\> Invoke-DbaQuery -SQLInstance server\instance1 -Query "select top 1 * from Restored.dbo.steps order by dt desc"
